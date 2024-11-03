@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { auth } from "../utils/firebase";
+
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 export default function RegisterPage() {
 
@@ -7,22 +10,10 @@ export default function RegisterPage() {
     const [email,setEmail] = useState('');
     const [password,setPassword] = useState('');
 
-    async function registerUser(e) {
-        e.preventDefault();
-        try {
-            const response = await fetch('http://localhost:4000/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ name, email, password })
-            });
-            const data = await response.json();
-            alert(data.message);
-        } catch (error) {
-            console.error('Error registering user:', error);
-            alert('Registration failed');
-        }
+    async function registerUser() {
+        const userCreds = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(userCreds.user, {displayName: name});
+        console.log(userCreds);
     }
 
     return (
@@ -52,8 +43,9 @@ export default function RegisterPage() {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                     <button
-                        type="submit"
+                        type="button"
                         className="bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-4 rounded-full w-full font-semibold transition duration-200 transform hover:scale-105"
+                        onClick={registerUser}
                     >
                         Register
                     </button>
@@ -68,3 +60,23 @@ export default function RegisterPage() {
         </div>
     );
 }
+
+
+
+    // async function registerUser(e) {
+    //     e.preventDefault();
+    //     try {
+    //         const response = await fetch('http://localhost:4000/register', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify({ name, email, password })
+    //         });
+    //         const data = await response.json();
+    //         alert(data.message);
+    //     } catch (error) {
+    //         console.error('Error registering user:', error);
+    //         alert('Registration failed');
+    //     }
+    // }
