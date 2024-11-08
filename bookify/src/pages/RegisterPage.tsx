@@ -1,19 +1,26 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { auth } from "../utils/firebase";
 
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import toast from "react-hot-toast";
 
 export default function RegisterPage() {
 
     const [name,setName] = useState('');
     const [email,setEmail] = useState('');
     const [password,setPassword] = useState('');
+    const navigate = useNavigate();
 
     async function registerUser() {
-        const userCreds = await createUserWithEmailAndPassword(auth, email, password);
-        await updateProfile(userCreds.user, {displayName: name});
-        console.log(userCreds);
+        try{
+            const userCreds = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(userCreds.user, {displayName: name});
+            navigate('/login');
+            console.log(userCreds);
+        } catch (e: any) {
+            toast.error(e.message);
+        }
     }
 
     return (

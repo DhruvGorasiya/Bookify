@@ -3,6 +3,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { auth } from "../utils/firebase";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
 
@@ -11,14 +12,14 @@ export default function LoginPage() {
     const { user } = useAuth();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        console.log(user);
-    }, [user]);
-
     async function handleLogin() {
-        const userCreds = await signInWithEmailAndPassword(auth, email, password);
-        navigate('/');
-        // console.log(userCreds);
+        try{
+            const userCreds = await signInWithEmailAndPassword(auth, email, password);
+            navigate('/');
+        } catch (e: any) {
+            toast.error(e.message);
+        }
+        
     }
 
     return (

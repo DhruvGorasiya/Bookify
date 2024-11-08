@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import Layout from './Layout';
 import RegisterPage from './pages/RegisterPage';
 import { AuthProvider } from './context/AuthContext';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path='/register' element={<RegisterPage />} />
         </Route>
       </Routes>
+      <Toaster position='top-right' />
     </AuthProvider>
   );
 }
