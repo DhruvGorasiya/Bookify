@@ -11,6 +11,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const { user } = useAuth();
     const navigate = useNavigate();
+    console.log("Testing");
 
     async function handleLogin() {
         try{
