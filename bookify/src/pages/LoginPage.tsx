@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import { auth } from "../utils/firebase";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
+import { getRoles } from "@testing-library/react";
 
 export default function LoginPage() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { user } = useAuth();
     const navigate = useNavigate();
 
     async function handleLogin() {
@@ -19,7 +19,6 @@ export default function LoginPage() {
         } catch (e: any) {
             toast.error(e.message);
         }
-        
     }
 
     return (
@@ -43,7 +42,6 @@ export default function LoginPage() {
                         type="button"
                         className="bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-4 rounded-full w-full font-semibold transition duration-200 transform hover:scale-105"
                         onClick={handleLogin}
-                        
                     >
                         Login
                     </button>
