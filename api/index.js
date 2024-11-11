@@ -1,6 +1,23 @@
+import { useAuth } from '../bookify/src/context/AuthContext';
+
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const cors = require('cors');
+const mongoose = require('mongoose');
+require('dotenv').config();
+const UserModel = require('./models/User');
+
+const {user} = useAuth();
+
+mongoose.connect(process.env.MONGO_URL);
+
+UserModel.create({
+    name: user.displayName,
+    email: user.email,
+    id: user.uid
+});
+
 
 app.use(cors({
     credentials: true,
