@@ -8,10 +8,12 @@ import { AuthProvider } from './context/AuthContext';
 import { Toaster } from 'react-hot-toast';
 import { UserContextProvider } from './UserContext';
 import axios from 'axios';
+import AccountPage from './pages/AccountPage';
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = 'http://localhost:4000';
 
 function App() {
+  
   return (
     <UserContextProvider>
       <AuthProvider>
@@ -20,6 +22,7 @@ function App() {
             <Route index element={<HomeIndexPage />} />
             <Route path='/login' element={<LoginPage />} />
             <Route path='/register' element={<RegisterPage />} />
+            <Route path='/account' element={<AccountPage />} />
           </Route>
         </Routes>
         <Toaster position='top-right' />

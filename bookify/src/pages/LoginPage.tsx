@@ -16,7 +16,6 @@ export default function LoginPage() {
     const[redirect, setRedirect] = useState(false);
     const {setUser} = useContext(UserContext);
 
-
     async function handleLogin() {
         try{
             // const userCreds = await signInWithEmailAndPassword(auth, email, password);
