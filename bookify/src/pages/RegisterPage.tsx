@@ -1,8 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { auth } from "../utils/firebase";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile , deleteUser} from "firebase/auth";
 import toast from "react-hot-toast";
+import axios from 'axios';
+
 
 
 
@@ -14,19 +16,23 @@ export default function RegisterPage() {
     const [password,setPassword] = useState('');
     const navigate = useNavigate();
 
+    useEffect(() => {
+        console.log(role);
+    }, [role]);
+
 
     async function registerUser() {
         try{
             
-            const userCreds = await createUserWithEmailAndPassword(auth, email, password);
-            await updateProfile(userCreds.user, {displayName: name});
-
-            navigate('/login');
-            console.log(userCreds);
+            // const userCreds = await createUserWithEmailAndPassword(auth, email, password);
+            // await updateProfile(userCreds.user, {displayName: name});
 
             
+            await axios.post('http://localhost:4000/register', {name : name, email: email, password: password, role: role});
+            
+            navigate('/login', {state: {email: email, password: password, role: role}});
         } catch (e: any) {
-            toast.error(e.message);
+            toast.error(e.response.data.error);
         }
     }
 
@@ -56,6 +62,15 @@ export default function RegisterPage() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
+                    <select 
+                        value={role} 
+                        className="w-full border border-gray-300 py-2 px-4 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        onChange={(e) => setRole(e.target.value)}
+                    >
+                        <option value="">Select Role</option>
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
                     <button
                         type="button"
                         className="bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-4 rounded-full w-full font-semibold transition duration-200 transform hover:scale-105"

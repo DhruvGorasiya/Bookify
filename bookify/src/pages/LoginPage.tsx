@@ -1,24 +1,33 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { auth } from "../utils/firebase";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { getRoles } from "@testing-library/react";
+import axios from "axios";
+import { UserContext } from "../UserContext";
 
 export default function LoginPage() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
-    console.log("Testing");
+    const[redirect, setRedirect] = useState(false);
+    const {setUser} = useContext(UserContext);
+
 
     async function handleLogin() {
         try{
-            const userCreds = await signInWithEmailAndPassword(auth, email, password);
-            navigate('/');
+            // const userCreds = await signInWithEmailAndPassword(auth, email, password);
+            const userDoc = await axios.post('http://localhost:4000/login', {email: email, password: password});
+            setUser(userDoc.data);
+            setRedirect(true);
+            if (redirect) {
+                navigate('/', {state: {email: email, password: password, role: userDoc.data?.role}});
+            }
         } catch (e: any) {
-            toast.error(e.message);
+            toast.error("Invalid credentials");
         }
     }
 

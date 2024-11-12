@@ -1,18 +1,21 @@
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function HomeIndexPage() {
 
     const {user} = useAuth();
 
-    if (!user) {
+    const {state} = useLocation();
+
+    if (!state) {
         return <div>Loading...</div>;
     }
     console.log(user);
     return (
         <div>
-            <p>Name: {user.displayName}</p>
-            <p>Email: {user.email}</p>
-            <p>{user.uid}</p>
+            <p>{state?.email}</p>
+            <p>{state?.password}</p>
+            <p>{state?.role}</p>
         </div>
     );
 }
