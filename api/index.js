@@ -18,7 +18,6 @@ UserModel.create({
     id: user.uid
 });
 
-
 app.use(cors({
     credentials: true,
     origin: 'http://localhost:3000'
@@ -37,6 +36,8 @@ app.post('/register', (req, res) => {
     res.json({ message: 'User registered successfully!' });
 });
 
+
 app.listen(4000, () => {
     console.log('Server running on http://localhost:4000');
 });
+

@@ -6,6 +6,7 @@ import Layout from './Layout';
 import RegisterPage from './pages/RegisterPage';
 import { AuthProvider } from './context/AuthContext';
 import { Toaster } from 'react-hot-toast';
+import AccountPage from './pages/AccountPage';
 
 function App() {
   return (
@@ -15,6 +16,8 @@ function App() {
           <Route index element={<HomeIndexPage />} />
           <Route path='/login' element={<LoginPage />} />
           <Route path='/register' element={<RegisterPage />} />
+          <Route path='/account/:subpage?' element={<AccountPage />} />
+          <Route path='/account/:subpage/:action' element={<AccountPage />} />
         </Route>
       </Routes>
       <Toaster position='top-right' />
