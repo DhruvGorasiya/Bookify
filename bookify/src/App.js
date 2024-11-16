@@ -11,6 +11,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProfilePage from './pages/ProfilePage';
 import { Toaster } from 'react-hot-toast';
 import { UserContextProvider } from './UserContext';
+import UpdateProfilePage from './pages/UpdateProfilePage';
 import axios from 'axios';
 
 axios.defaults.withCredentials = true;
@@ -34,6 +35,7 @@ function App() {
             <Route path='/account/bookings' element={<MyBookings />} />
             <Route path='/account/accommodations' element={<PlacesPage />} />
             <Route path='/account/:places/:action' element={<PlacesPage />} />
+            <Route path='/account/updateProfile' element={<UpdateProfilePage />} />
           </Route>
 
         </Routes>

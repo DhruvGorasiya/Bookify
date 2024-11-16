@@ -40,6 +40,46 @@ app.post('/register', async (req, res) => {
     }
 });
 
+app.post('/updateProfile', async (req, res) => {
+    const { email, name, oldPassword, newPassword } = req.body;
+
+    try {
+        const { token } = req.cookies;
+        if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+        const userData = jwt.verify(token, secret);
+        const user = await UserModel.findById(userData.id);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const isPasswordValid = bcrypt.compareSync(oldPassword, user.password);
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: "Incorrect old password" });
+        }
+
+        if (name) user.name = name;
+        if (email) user.email = email;
+
+        if (newPassword) {
+            user.password = bcrypt.hashSync(newPassword, bcrypt.genSaltSync(10));
+        }
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Profile updated successfully",
+            user: { name: user.name, email: user.email },
+        });
+    } catch (error) {
+        console.error("Error in updating profile:", error);
+        res.status(500).json({ message: "Something went wrong" });
+    }
+});
+
+
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     const user = await UserModel.findOne({ email: email });

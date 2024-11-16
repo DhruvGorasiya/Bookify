@@ -18,10 +18,12 @@ export default function ProfilePage() {
   const { user, loading, setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
+  const handleUpdateProfile = () => {
+    navigate("/account/updateProfile");
+  };
+
   async function logout() {
-    await axios.post(
-      "http://localhost:4000/logout",
-    );
+    await axios.post("http://localhost:4000/logout");
     setUser(null);
     navigate("/");
   }
@@ -157,10 +159,32 @@ export default function ProfilePage() {
         </Grid>
 
         {/* Logout Button at the end */}
-        <Box sx={{ textAlign: "center", mt: 5 }}>
+        <Box
+          sx={{
+            textAlign: "center",
+            mt: 5,
+            display: "flex",
+            gap: 2,
+            justifyContent: "center",
+          }}
+        >
           <Button
             variant="contained"
             color="primary"
+            onClick={handleUpdateProfile}
+            sx={{
+              px: 4,
+              py: 1.5,
+              borderRadius: 3,
+              textTransform: "none",
+              fontSize: 16,
+            }}
+          >
+            Update Profile
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
             onClick={logout}
             sx={{
               px: 4,
