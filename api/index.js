@@ -70,6 +70,10 @@ app.get('/profile', (req, res) => {
     else res.json(null);
 });
 
+app.post('/logout', (req, res) => {
+    res.cookie('token', '').json({ message: 'Logged out' });
+});
+
 app.listen(4000, () => {
     console.log('Server running on http://localhost:4000');
 });
