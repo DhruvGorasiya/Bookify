@@ -7,6 +7,7 @@ import {
   Button,
   Typography,
   Alert,
+  Stack,
 } from "@mui/material";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -21,6 +22,7 @@ export default function UpdateProfilePage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+
   async function handleUpdate(e: any) {
     e.preventDefault();
     setError("");
@@ -49,6 +51,10 @@ export default function UpdateProfilePage() {
       setError(err.response?.data?.message || "Something went wrong.");
       toast.error(err.response?.data?.message || "Something went wrong.");
     }
+  }
+
+  function handleCancel() {
+    navigate(-1); // Go back to the previous page
   }
 
   return (
@@ -112,15 +118,24 @@ export default function UpdateProfilePage() {
           sx={{ mb: 3 }}
           required
         />
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth
-          sx={{ py: 1.5 }}
-        >
-          Update Profile
-        </Button>
+        <Stack direction="row" spacing={2} justifyContent="center" mt={2}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            sx={{ px: 3, py: 1.5 }}
+          >
+            Update Profile
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleCancel}
+            sx={{ px: 3, py: 1.5 }}
+          >
+            Cancel
+          </Button>
+        </Stack>
       </Box>
     </Container>
   );

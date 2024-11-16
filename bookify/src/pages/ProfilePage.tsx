@@ -89,8 +89,7 @@ export default function ProfilePage() {
             {user?.name || "Guest User"}
           </Typography>
           <Typography color="text.secondary" sx={{ mb: 2 }}>
-            Member since{" "}
-            {new Date(user?.email || "").toLocaleDateString() || "N/A"}
+            {user?.role === "admin" ? "Admin" : "Member"}
           </Typography>
         </Paper>
 
