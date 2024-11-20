@@ -14,27 +14,39 @@ import { UserContext } from "../UserContext";
 import { Avatar } from "@mui/material";
 import { Link } from "react-router-dom";
 
-const navigation = [
-  { name: "Profile", href: "/account/profile", current: true },
-  { name: "My Bookings", href: "/account/bookings", current: false },
-  { name: "My Accommodations", href: "/account/accommodations", current: false },
-];
+
+
+// const navigation = [
+//   { name: "Profile", href: "/account/profile", current: true },
+//   { name: "My Bookings", href: "/account/bookings", current: false },
+//   { name: "My Accommodations", href: "/account/accommodations", current: false },
+// ];
 const userNavigation = [
   { name: "Your Profile", href: "/account/profile" },
   { name: "Settings", href: "/settings" },
   { name: "Sign out", href: "/" },
 ];
 
+
+
 function classNames(...classes: string[]): string {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Example() {
+
+
+export default function AccountPage() {
   const { user, loading, setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
+  const navigation = [
+    { name: "Profile", href: "/account/profile", current: true },
+    { name: "My Bookings", href: "/account/bookings", current: false },
+    ...(user?.role === "host" || user?.role === "admin" ? [{ name: "My Accommodations", href: "/account/accommodations", current: false }] : [])
+  ];
+
   if (!loading) {
-    return "Loading";
+    return "Loading...";
   }
 
   if (loading && !user) return <Navigate to="/login" />;

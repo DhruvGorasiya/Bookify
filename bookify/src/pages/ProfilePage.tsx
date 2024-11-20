@@ -89,7 +89,7 @@ export default function ProfilePage() {
             {user?.name || "Guest User"}
           </Typography>
           <Typography color="text.secondary" sx={{ mb: 2 }}>
-            {user?.role === "admin" ? "Admin" : "Member"}
+            {user?.role === "host" || user?.role === "admin" ? "Host" : "Guest"}
           </Typography>
         </Paper>
 
@@ -125,7 +125,7 @@ export default function ProfilePage() {
           </Grid>
 
           {/* Conditionally render My Accommodations Section for admin users */}
-          {user?.role === "admin" && (
+          {user?.role === "host" || user?.role === "admin" && (
             <Grid item xs={12} md={6}>
               <Paper
                 elevation={3}
