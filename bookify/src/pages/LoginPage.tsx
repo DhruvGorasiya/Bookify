@@ -13,7 +13,6 @@ export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
-    const[redirect, setRedirect] = useState(false);
     const {setUser} = useContext(UserContext);
 
     async function handleLogin() {
@@ -21,10 +20,7 @@ export default function LoginPage() {
             // const userCreds = await signInWithEmailAndPassword(auth, email, password);
             const userDoc = await axios.post('http://localhost:4000/login', {email: email, password: password});
             setUser(userDoc.data);
-            setRedirect(true);
-            if (redirect) {
-                navigate('/', {state: {email: email, password: password, role: userDoc.data?.role}});
-            }
+            navigate('/', {state: {email: email, password: password, role: userDoc.data?.role}});
         } catch (e: any) {
             toast.error("Invalid credentials");
         }
