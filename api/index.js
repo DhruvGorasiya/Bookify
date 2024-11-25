@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const mongoose = require('mongoose');
+const PlaceModel = require('./models/Place');
 require('dotenv').config();
 const UserModel = require('./models/User');
 app.use(express.json());
@@ -16,7 +17,7 @@ mongoose.connect(process.env.MONGO_URL);
 const secret = 'asdfasdgasdfgasdfhgaisdh';
 
 app.use(cookieParser());
-app.use('/uploads', express.static(__dirname+'/uploads'));
+app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use(cors({
     credentials: true,
     origin: 'http://localhost:3000'
@@ -27,7 +28,7 @@ app.use(cors({
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
 
-    let {role} = req.body;
+    let { role } = req.body;
 
     console.log('User Registration Data:', { name, email, password, role });
 
@@ -112,16 +113,16 @@ app.get('/profile', (req, res) => {
     const { token } = req.cookies;
     if (token) {
         jwt.verify(token, secret, {}, (err, userData) => {
-            UserModel.findById(userData.id).then(({name, email, role, _id}) => {
-                res.json({name, email, role, _id});
+            UserModel.findById(userData.id).then(({ name, email, role, _id }) => {
+                res.json({ name, email, role, _id });
             });
         });
     }
     else res.json(null);
 });
 
-app.post('/upload-by-link', async (req,res) => {
-    const {link} = req.body;
+app.post('/upload-by-link', async (req, res) => {
+    const { link } = req.body;
     const newName = 'photo' + Date.now() + '.jpg';
     await imageDownloader.image({
         url: link,
@@ -135,11 +136,11 @@ app.post('/logout', (req, res) => {
     res.cookie('token', '').json({ message: 'Logged out' });
 });
 
-const photosMiddleware = multer({dest:'uploads/'})
+const photosMiddleware = multer({ dest: 'uploads/' })
 app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
     const uploadedFiles = [];
-    for(let i = 0; i < req.files.length; i++){
-        const {path, originalname} = req.files[i];
+    for (let i = 0; i < req.files.length; i++) {
+        const { path, originalname } = req.files[i];
         const parts = originalname.split('.');
         const ext = parts[parts.length - 1];
         const newPath = path + '.' + ext;
@@ -147,6 +148,64 @@ app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
         uploadedFiles.push(newPath.replace(/uploads[\\/]/, ''));
     }
     res.json(uploadedFiles);
+});
+
+app.post('/places', (req, res) => {
+    const { token } = req.cookies;
+    const {
+        title, address, addedPhotos,
+        description, perks, extraInfo,
+        checkIn, checkOut, maxGuests
+    } = req.body;
+    if (token) {
+        jwt.verify(token, secret, {}, async (err, userData) => {
+            if (err) throw err;
+            const placeDoc = await PlaceModel.create({
+                owner: userData.id,
+                title, address, photos: addedPhotos,
+                description, perks, extraInfo,
+                checkIn, checkOut, maxGuests
+            });
+            res.json(placeDoc);
+        });
+    }
+});
+
+app.get('/places', (req, res) => {
+    const { token } = req.cookies;
+    jwt.verify(token, secret, {}, async (err, userData) => {
+        if (err) throw err;
+        const { id } = userData;
+        res.json(await PlaceModel.find({ owner: id }));
+    });
+});
+
+app.get('/places/:id', async (req, res) => {
+    const { id } = req.params;
+    res.json(await PlaceModel.findById(id));
+});
+
+app.put('/places', async (req, res) => {
+    const { token } = req.cookies;
+    const {
+        id,
+        title, address, addedPhotos,
+        description, perks, extraInfo,
+        checkIn, checkOut, maxGuests
+    } = req.body;
+    jwt.verify(token, secret, {}, async (err, userData) => {
+        if (err) throw err;
+        const placeDoc = await PlaceModel.findById(id);
+        if (userData.id === placeDoc.owner.toString()) {
+            placeDoc.set({
+                title, address, photos: addedPhotos,
+                description, perks, extraInfo,
+                checkIn, checkOut, maxGuests
+            });
+            await placeDoc.save();
+            res.json('ok');
+        }
+    });
 })
 
 app.listen(4000, () => {

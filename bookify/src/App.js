@@ -13,6 +13,7 @@ import { Toaster } from 'react-hot-toast';
 import { UserContextProvider } from './UserContext';
 import UpdateProfilePage from './pages/UpdateProfilePage';
 import axios from 'axios';
+import PlacesFormPage from './pages/PlacesFormPage';
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = 'http://localhost:4000';
@@ -34,7 +35,7 @@ function App() {
             <Route path='/account/profile' element={<ProfilePage />} />
             <Route path='/account/bookings' element={<MyBookings />} />
             <Route path='/account/accommodations' element={<PlacesPage />} />
-            <Route path='/account/:places/:action' element={<PlacesPage />} />
+            <Route path='/account/:places/:id' element={<PlacesFormPage />} />
             <Route path='/account/updateProfile' element={<UpdateProfilePage />} />
           </Route>
 
