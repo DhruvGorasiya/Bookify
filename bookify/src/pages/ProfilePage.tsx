@@ -125,7 +125,7 @@ export default function ProfilePage() {
           </Grid>
 
           {/* Conditionally render My Accommodations Section for admin users */}
-          {user?.role === "host" || user?.role === "admin" && (
+          {(user?.role === "host" || user?.role === "admin") && (
             <Grid item xs={12} md={6}>
               <Paper
                 elevation={3}
