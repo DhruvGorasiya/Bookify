@@ -17,7 +17,7 @@ export default function PlacesFormPage() {
     const [redirect, setRedirect] = useState(false);
     const { id } = useParams();
     useEffect(() => {
-        if (!id) {
+        if (id === 'new') {
             return;
         }
         axios.get('/places/' + id).then(response => {
@@ -46,13 +46,13 @@ export default function PlacesFormPage() {
             checkIn, checkOut, maxGuests
         };
 
-        if (id) {
+        if (id === 'new') {
+            await axios.post('/places', placeData);
+        } else {
             await axios.put('/places', {
                 id, ...placeData
 
             });
-        } else {
-            await axios.post('/places', placeData);
         }
 
         setRedirect(true);
