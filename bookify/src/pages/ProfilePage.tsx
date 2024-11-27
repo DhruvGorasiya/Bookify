@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 export default function ProfilePage() {
   const { user, loading, setUser } = useContext(UserContext);
@@ -150,7 +151,16 @@ export default function ProfilePage() {
                 <Divider sx={{ mb: 2 }} />
                 {/* Add accommodations list component here */}
                 <Typography color="text.secondary" textAlign="center">
-                  No accommodations found. Consider hosting!
+                  No Hostings!!
+                  <br />
+                  <button className="bg-purple-600 text-white px-6 py-2 mt-4 rounded-md hover:bg-purple-700 transition duration-200">
+                    <Link
+                      to="/account/places/new"
+                      className="no-underline text-white"
+                    >
+                      Add new place
+                    </Link>
+                  </button>
                 </Typography>
               </Paper>
             </Grid>
