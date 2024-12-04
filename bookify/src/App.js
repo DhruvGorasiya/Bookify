@@ -6,14 +6,15 @@ import Layout from './Layout';
 import AccountLayout from './LayoutAccount';
 import RegisterPage from './pages/RegisterPage';
 import MyBookings from './pages/MyBookingsPage';
+import PlacePage from './pages/PlacePage';
 import PlacesPage from './pages/PlacesPage';
+import PlacesFormPage from './pages/PlacesFormPage';
 import { AuthProvider } from './context/AuthContext';
 import ProfilePage from './pages/ProfilePage';
 import { Toaster } from 'react-hot-toast';
 import { UserContextProvider } from './UserContext';
 import UpdateProfilePage from './pages/UpdateProfilePage';
 import axios from 'axios';
-import PlacesFormPage from './pages/PlacesFormPage';
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = 'http://localhost:4000';
@@ -28,8 +29,7 @@ function App() {
             <Route index element={<HomeIndexPage />} />
             <Route path='/login' element={<LoginPage />} />
             <Route path='/register' element={<RegisterPage />} />
-
-            
+            <Route path='/place/:id' element={<PlacePage />} />
           </Route>
           <Route path='/account' element={<AccountLayout />}>
             <Route path='/account/profile' element={<ProfilePage />} />
