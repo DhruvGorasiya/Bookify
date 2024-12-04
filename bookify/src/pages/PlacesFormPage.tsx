@@ -14,6 +14,7 @@ export default function PlacesFormPage() {
     const [checkIn, setCheckIn] = useState('');
     const [checkOut, setCheckOut] = useState('');
     const [maxGuests, setMaxGuests] = useState(1);
+    const [price, setPrice] = useState(100);
     const [redirect, setRedirect] = useState(false);
     const { id } = useParams();
     useEffect(() => {
@@ -31,6 +32,7 @@ export default function PlacesFormPage() {
             setCheckIn(data.checkIn);
             setCheckOut(data.checkOut);
             setMaxGuests(data.maxGuests);
+            setPrice(data.price);
 
         })
     }, [id]);
@@ -43,7 +45,7 @@ export default function PlacesFormPage() {
         const placeData = {
             title, address, addedPhotos,
             description, perks, extraInfo,
-            checkIn, checkOut, maxGuests
+            checkIn, checkOut, maxGuests, price
         };
 
         if (id === 'new') {
@@ -80,7 +82,7 @@ export default function PlacesFormPage() {
                     <Perks selected={perks} onChange={setPerks} />
                 </div>
                 {inputHeader('Timings & Guests')}
-                <div className="grid gap-2 sm:grid-cols-3">
+                <div className="grid gap-2 grid-cols-2 md:grid-cols-4">
                     <div>
                         <h3 className="mt-2 -mb-5">Check-in time</h3><br />
                         <input type="time" value={checkIn} onChange={ev => setCheckIn(ev.target.value)}
@@ -94,6 +96,11 @@ export default function PlacesFormPage() {
                     <div>
                         <h3 className="mt-2 -mb-5">Max guests</h3><br />
                         <input type="number" value={maxGuests} onChange={ev => setMaxGuests(Number(ev.target.value))}
+                            className="bg-gray-200 text-black rounded max-w-4xl py-2 px-4 w-full mt-1"></input>
+                    </div>
+                    <div>
+                        <h3 className="mt-2 -mb-5">Price per night</h3><br />
+                        <input type="number" value={price} onChange={ev => setPrice(Number(ev.target.value))}
                             className="bg-gray-200 text-black rounded max-w-4xl py-2 px-4 w-full mt-1"></input>
                     </div>
                 </div>
