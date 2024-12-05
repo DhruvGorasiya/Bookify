@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios');
 const cors = require('cors');
 const app = express();
 const mongoose = require('mongoose');
@@ -265,6 +266,32 @@ app.post('/bookings', async (req,res) => {
 app.get('/bookings', async (req, res) => {
     const userData = await getUserDataFromReq(req);
     res.json( await Booking.find({user:userData.id}).populate('place') );
+});
+
+app.get('/api/geocode', async (req, res) => {
+    try {
+        const response = await axios.get(
+            `https://maps.googleapis.com/maps/api/geocode/json`,
+            { params: req.query }
+        );
+        res.json(response.data);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error.message);
+    }
+});
+
+app.get('/api/nearbySearch', async (req, res) => {
+    try {
+        const response = await axios.get(
+            `https://maps.googleapis.com/maps/api/place/nearbysearch/json`,
+            { params: req.query }
+        );
+        res.json(response.data);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error.message);
+    }
 });
 
 app.listen(4000, () => {
