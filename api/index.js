@@ -222,6 +222,29 @@ app.get('/places', async (req, res) => {
     res.json(await PlaceModel.find());
 });
 
+app.get('/search-places', async (req, res) => {
+    try {
+        const { search } = req.query;
+        let query = {};
+        
+        if (search) {
+            query = {
+                $or: [
+                    { title: { $regex: search, $options: 'i' } },
+                    { address: { $regex: search, $options: 'i' } },
+                    { description: { $regex: search, $options: 'i' } }
+                ]
+            };
+        }
+        
+        const places = await PlaceModel.find(query);
+        res.json(places);
+    } catch (error) {
+        console.error('Error searching places:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 app.post('/bookings', async (req,res) => {
     const userData = await getUserDataFromReq(req);
     const {

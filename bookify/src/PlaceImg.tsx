@@ -4,7 +4,7 @@ export default function PlaceImg({ place, index = 0, className }: { place: any, 
     }
 
     // Default className if not provided
-    className = className || 'object-cover';
+    className =  'object-cover w-full h-full';
 
     return (
         <img
