@@ -3,6 +3,7 @@ const cors = require('cors');
 const app = express();
 const mongoose = require('mongoose');
 const PlaceModel = require('./models/Place');
+const Booking = require('./models/Booking');
 require('dotenv').config();
 const UserModel = require('./models/User');
 app.use(express.json());
@@ -15,6 +16,15 @@ const fs = require('fs');
 
 mongoose.connect(process.env.MONGO_URL);
 const secret = 'asdfasdgasdfgasdfhgaisdh';
+
+function getUserDataFromReq(token) {
+    return new Promise((resolve, reject) => {
+        jwt.verify(req.cookies.token, jwtSecret, {}, async (err, userData) => {
+            if (err) throw err;
+            resolve(userData);
+        });
+    });
+}
 
 app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
@@ -210,7 +220,29 @@ app.put('/places', async (req, res) => {
 
 app.get('/places', async (req, res) => {
     res.json(await PlaceModel.find());
-})
+});
+
+app.post('/bookings', async (req,res) => {
+    const userData = await getUserDataFromReq(req);
+    const {
+        place, checkIn, checkOut, numberOfGuests, name, phone, price,
+    } = req.body;
+    Booking.create({
+        place, checkIn, checkOut, numberOfGuests, name, phone, price,
+        user:userData.id,
+    }).then((doc) => {
+        res.json(doc);
+    }).catch ((err) => {
+        throw err;
+    })
+});
+
+
+
+app.get('/bookings', async (req, res) => {
+    const userData = await getUserDataFromReq(req);
+    res.json( await Booking.find({user:userData.id}).populate('place') );
+});
 
 app.listen(4000, () => {
     console.log('Server running on http://localhost:4000');
