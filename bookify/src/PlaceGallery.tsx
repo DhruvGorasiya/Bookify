@@ -1,6 +1,6 @@
 import React from "react";
 import {useState } from "react";
-export default function PlaceGallery ({place}){
+export default function PlaceGallery ({place}: {place: any}) {
     const [showAllPhotos, setShowAllPhotos] = useState(false);
     if (showAllPhotos) {
         return (

@@ -3,16 +3,21 @@ import { differenceInCalendarDays } from "date-fns";
 import axios from "axios";
 import { Navigate } from 'react-router-dom';
 import { useAuth } from "./context/AuthContext";
+import { UserContext } from "./UserContext";
 
 
-export default function BookingWidget({ place }: { place: { price: ReactNode } }) {
+
+
+export default function BookingWidget({ place }: { place: any }) {
     const [checkIn, setCheckIn] = useState('');
     const [checkOut, setCheckOut] = useState('');
     const [numberOfGuests, setNumberOfGuests] = useState(1);
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [redirect, setRedirect] = useState('');
-    const { user } = useAuth();
+    // const { user } = useAuth();
+    // const { user } = useContext(AuthContext);
+    const {user} = useContext(UserContext);
 
 
     useEffect(() => {
@@ -66,7 +71,7 @@ export default function BookingWidget({ place }: { place: { price: ReactNode } }
                         <label>Number of guests: </label>
                         <input type="number"
                             value={numberOfGuests}
-                            onChange={ev => setNumberOfGuests(ev.target.value)} />
+                            onChange={ev => setNumberOfGuests(Number(ev.target.value))} />
                     </div>
                 </div>
                 {numberOfNights > 0 && (

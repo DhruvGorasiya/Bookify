@@ -14,12 +14,12 @@ const imageDownloader = require('image-downloader');
 const multer = require('multer');
 const fs = require('fs');
 
-mongoose.connect(process.env.MONGO_URL);
+mongoose.connect(process.env.MONGO_URL);    
 const secret = 'asdfasdgasdfgasdfhgaisdh';
 
-function getUserDataFromReq(token) {
+function getUserDataFromReq(req) {
     return new Promise((resolve, reject) => {
-        jwt.verify(req.cookies.token, jwtSecret, {}, async (err, userData) => {
+        jwt.verify(req.cookies.token, secret, {}, async (err, userData) => {
             if (err) throw err;
             resolve(userData);
         });
