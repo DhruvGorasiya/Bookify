@@ -11,7 +11,7 @@ const UserModel = require('./models/User');
 const NearbyPlace = require('./models/NearbyPlace');
 app.use(express.json());
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const cookieParser = require('cookie-parser');
 const imageDownloader = require('image-downloader');
 const multer = require('multer');
@@ -34,7 +34,7 @@ app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use(cors({
     credentials: true,
-    origin: reactAPPURL
+    origin: process.env.NETLIFY_URL
 }));
 const sessionOptions = {
     secret: process.env.SESSION_SECRET || "bookify",
@@ -51,7 +51,12 @@ if (process.env.NODE_ENV !== "development") {
 }
 app.use(session(sessionOptions));
 
-
+app.get('/hello', (req, res) => {
+    res.send('Life is good!')
+  })
+  app.get('/', (req, res) => {
+    res.send('Welcome to Full Stack Development!')
+  })
 
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
