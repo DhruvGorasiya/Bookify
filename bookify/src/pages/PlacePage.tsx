@@ -20,6 +20,7 @@ interface Place {
 }
 
 export default function PlacePage() {
+    const baseAPIPath = process.env.API_BASE_PATH || 'http://localhost:4000';
     const { id } = useParams();
     const { user } = useContext(UserContext);
     const navigate = useNavigate();
@@ -38,7 +39,7 @@ export default function PlacePage() {
     useEffect(() => {
         if (!id) return;
 
-        axios.get(`/places/${id}`).then((response) => {
+        axios.get(`${baseAPIPath}/places/${id}`).then((response) => {
             setPlace(response.data);
         });
     }, [id]);
@@ -50,7 +51,7 @@ export default function PlacePage() {
         const fetchNearbyPlaces = async () => {
             try {
                 const geocodeResponse = await axios.get(
-                    `http://localhost:4000/api/geocode`,
+                    `${baseAPIPath}/api/geocode`,
                     {
                         params: {
                             address: place.address,
@@ -63,7 +64,7 @@ export default function PlacePage() {
 
                 if (location) {
                     const placesResponse = await axios.get(
-                        `http://localhost:4000/api/nearbySearch`,
+                        `${baseAPIPath}/api/nearbySearch`,
                         {
                             params: {
                                 location: `${location.lat},${location.lng}`,
@@ -87,7 +88,7 @@ export default function PlacePage() {
     useEffect(() => {
         const fetchBookmarkedPlaces = async () => {
             try {
-                const response = await axios.get(`/api/bookmarks`);
+                const response = await axios.get(`${baseAPIPath}/api/bookmarks`);
                 const places = new Set<string>(
                     response.data.map((place: { place_id: string }) => place.place_id)
                 );
@@ -117,11 +118,11 @@ export default function PlacePage() {
         try {
             if (newHighlightedPlaces.has(placeId)) {
                 // Add to bookmarks
-                await axios.post(`/api/bookmarks`, { placeId });
+                await axios.post(`${baseAPIPath}/api/bookmarks`, { placeId });
                 setBookmarkedPlaces((prev) => new Set(prev.add(placeId)));
             } else {
                 // Remove from bookmarks
-                await axios.delete(`/api/bookmarks/${placeId}`);
+                await axios.delete(`${baseAPIPath}/api/bookmarks/${placeId}`);
                 setBookmarkedPlaces((prev) => {
                     const updated = new Set(prev);
                     updated.delete(placeId);
@@ -151,7 +152,7 @@ export default function PlacePage() {
     // Add this function to handle place deletion
     const handleDeletePlace = async () => {
         try {
-            await axios.delete(`/api/places/${id}`);
+            await axios.delete(`${baseAPIPath}/api/places/${id}`);
             // Redirect to home page or places list after deletion
             navigate("/");
         } catch (error) {

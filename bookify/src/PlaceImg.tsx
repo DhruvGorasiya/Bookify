@@ -1,4 +1,5 @@
 export default function PlaceImg({ place, index = 0, className }: { place: any, index?: number, className?: string }) {
+    const baseAPIPath = process.env.API_BASE_PATH || 'http://localhost:4000';
     if (!place.photos?.length) {
         return null; // Return null if there are no photos
     }
@@ -8,7 +9,7 @@ export default function PlaceImg({ place, index = 0, className }: { place: any, 
 
     return (
         <img
-            src={`http://localhost:4000/uploads/${place.photos[index]}`}
+            src={`${baseAPIPath}/uploads/${place.photos[index]}`}
             alt={place.title || 'Place'}
             className={className}
         />

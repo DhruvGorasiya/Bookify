@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const PlaceModel = require('./models/Place');
 const Booking = require('./models/Booking');
 require('dotenv').config();
+const session = require("express-session");
 const UserModel = require('./models/User');
 const NearbyPlace = require('./models/NearbyPlace');
 app.use(express.json());
@@ -16,8 +17,9 @@ const imageDownloader = require('image-downloader');
 const multer = require('multer');
 const fs = require('fs');
 
-mongoose.connect(process.env.MONGO_URL);    
+mongoose.connect(process.env.MONGO_URL);
 const secret = 'asdfasdgasdfgasdfhgaisdh';
+const reactAPPURL = process.env.NETLIFY_URL || 'http://localhost:3000';
 
 function getUserDataFromReq(req) {
     return new Promise((resolve, reject) => {
@@ -32,8 +34,22 @@ app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use(cors({
     credentials: true,
-    origin: 'http://localhost:3000'
+    origin: reactAPPURL
 }));
+const sessionOptions = {
+    secret: process.env.SESSION_SECRET || "bookify",
+    resave: false,
+    saveUninitialized: false,
+};
+if (process.env.NODE_ENV !== "development") {
+    sessionOptions.proxy = true;
+    sessionOptions.cookie = {
+        sameSite: "none",
+        secure: true,
+        domain: process.env.NODE_SERVER_DOMAIN,
+    };
+}
+app.use(session(sessionOptions));
 
 
 
@@ -228,7 +244,7 @@ app.get('/search-places', async (req, res) => {
     try {
         const { search } = req.query;
         let query = {};
-        
+
         if (search) {
             query = {
                 $or: [
@@ -238,7 +254,7 @@ app.get('/search-places', async (req, res) => {
                 ]
             };
         }
-        
+
         const places = await PlaceModel.find(query);
         res.json(places);
     } catch (error) {
@@ -247,17 +263,17 @@ app.get('/search-places', async (req, res) => {
     }
 });
 
-app.post('/bookings', async (req,res) => {
+app.post('/bookings', async (req, res) => {
     const userData = await getUserDataFromReq(req);
     const {
         place, checkIn, checkOut, numberOfGuests, name, phone, price,
     } = req.body;
     Booking.create({
         place, checkIn, checkOut, numberOfGuests, name, phone, price,
-        user:userData.id,
+        user: userData.id,
     }).then((doc) => {
         res.json(doc);
-    }).catch ((err) => {
+    }).catch((err) => {
         throw err;
     })
 });
@@ -266,7 +282,7 @@ app.post('/bookings', async (req,res) => {
 
 app.get('/bookings', async (req, res) => {
     const userData = await getUserDataFromReq(req);
-    res.json( await Booking.find({user:userData.id}).populate('place') );
+    res.json(await Booking.find({ user: userData.id }).populate('place'));
 });
 
 app.get('/api/geocode', async (req, res) => {
@@ -382,6 +398,4 @@ app.delete('/api/bookmarks/:place_id', async (req, res) => {
 });
 
 
-app.listen(4000, () => {
-    console.log('Server running on http://localhost:4000');
-});
+app.listen(process.env.PORT || 4000);

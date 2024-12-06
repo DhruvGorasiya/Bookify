@@ -22,6 +22,7 @@ export default function UpdateProfilePage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+  const baseAPIPath = process.env.API_BASE_PATH || 'http://localhost:4000';
 
   async function handleUpdate(e: any) {
     e.preventDefault();
@@ -29,7 +30,7 @@ export default function UpdateProfilePage() {
     setSuccess("");
 
     try {
-      const response = await axios.post("http://localhost:4000/updateProfile", {
+      const response = await axios.post(`${baseAPIPath}/updateProfile`, {
         email,
         name,
         oldPassword,
@@ -40,7 +41,7 @@ export default function UpdateProfilePage() {
         setUser(response.data.user); // Update the user context
         setSuccess("Profile updated successfully!");
         toast.success("Profile updated successfully!");
-        await axios.post("http://localhost:4000/logout");
+        await axios.post(`${baseAPIPath}/logout`);
         setUser(null);
         navigate("/");
       } else {

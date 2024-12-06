@@ -15,6 +15,7 @@ export default function RegisterPage() {
     const [email,setEmail] = useState('');
     const [password,setPassword] = useState('');
     const navigate = useNavigate();
+    const baseAPIPath = process.env.API_BASE_PATH || 'http://localhost:4000';
 
     useEffect(() => {
         console.log(role);
@@ -23,12 +24,7 @@ export default function RegisterPage() {
 
     async function registerUser() {
         try{
-            
-            // const userCreds = await createUserWithEmailAndPassword(auth, email, password);
-            // await updateProfile(userCreds.user, {displayName: name});
-
-            
-            await axios.post('http://localhost:4000/register', {name : name, email: email, password: password, role: role});
+            await axios.post(`${baseAPIPath}/register`, {name : name, email: email, password: password, role: role});
             
             navigate('/login', {state: {email: email, password: password, role: role}});
         } catch (e: any) {
@@ -89,23 +85,3 @@ export default function RegisterPage() {
         </div>
     );
 }
-
-
-
-    // async function registerUser(e) {
-    //     e.preventDefault();
-    //     try {
-    //         const response = await fetch('http://localhost:4000/register', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json'
-    //             },
-    //             body: JSON.stringify({ name, email, password })
-    //         });
-    //         const data = await response.json();
-    //         alert(data.message);
-    //     } catch (error) {
-    //         console.error('Error registering user:', error);
-    //         alert('Registration failed');
-    //     }
-    // }

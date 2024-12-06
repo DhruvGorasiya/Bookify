@@ -14,11 +14,12 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
     const {setUser} = useContext(UserContext);
+    const baseAPIPath = process.env.API_BASE_PATH || 'http://localhost:4000';
 
     async function handleLogin() {
         try{
             // const userCreds = await signInWithEmailAndPassword(auth, email, password);
-            const userDoc = await axios.post('http://localhost:4000/login', {email: email, password: password});
+            const userDoc = await axios.post(`${baseAPIPath}/login`, {email: email, password: password});
             setUser(userDoc.data);
             navigate('/', {state: {email: email, password: password, role: userDoc.data?.role}});
         } catch (e: any) {

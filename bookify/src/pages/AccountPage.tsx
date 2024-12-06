@@ -35,6 +35,7 @@ export default function AccountPage() {
 
   const { user, loading, setUser } = useContext(UserContext);
   const navigate = useNavigate();
+  const baseAPIPath = process.env.API_BASE_PATH || 'http://localhost:4000';
 
   const navigation = [
     { name: "Profile", href: "/account/profile", current: true },
@@ -57,7 +58,7 @@ export default function AccountPage() {
   if (loading && !user) return <Navigate to="/login" />;
 
   const handleLogout = async () => {
-    await axios.post("http://localhost:4000/logout");
+    await axios.post(`${baseAPIPath}/logout`);
     setUser(null);
     navigate("/");
   };
