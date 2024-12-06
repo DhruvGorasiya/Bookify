@@ -294,6 +294,11 @@ app.get('/api/nearbySearch', async (req, res) => {
     }
 });
 
+app.get('/place/:id', async (req, res) => {
+    const { id } = req.params;
+    res.json(await PlaceModel.findById(id));
+});
+
 app.listen(4000, () => {
     console.log('Server running on http://localhost:4000');
 });
