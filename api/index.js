@@ -7,6 +7,7 @@ const PlaceModel = require('./models/Place');
 const Booking = require('./models/Booking');
 require('dotenv').config();
 const UserModel = require('./models/User');
+const NearbyPlace = require('./models/NearbyPlace');
 app.use(express.json());
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -294,10 +295,92 @@ app.get('/api/nearbySearch', async (req, res) => {
     }
 });
 
-app.get('/place/:id', async (req, res) => {
-    const { id } = req.params;
-    res.json(await PlaceModel.findById(id));
+app.post('/api/bookmarks', async (req, res) => {
+    const { token } = req.cookies;
+    const { placeId, name, vicinity } = req.body;
+    if (token) {
+        try {
+            // Decode user data from the JWT token
+            const userData = jwt.verify(token, secret);
+            const userId = userData.id;
+
+            // Check if the place is already bookmarked
+            const existingBookmark = await NearbyPlace.findOne({ place_id: placeId, user: userId });
+            if (existingBookmark) {
+                return res.status(400).json({ message: 'Place already bookmarked' });
+            }
+
+            // Create and save the new bookmark
+            const newBookmark = await NearbyPlace.create({
+                place_id: placeId,
+                name,
+                vicinity,
+                user: userId,
+            });
+
+            res.status(200).json(newBookmark);
+        } catch (err) {
+            console.error('Error while adding bookmark:', err);
+            res.status(500).json({ message: 'Failed to add bookmark' });
+        }
+    } else {
+        res.status(401).json({ message: 'Unauthorized' });
+    }
 });
+
+// Route to get all bookmarks for the logged-in user
+app.get('/api/bookmarks', async (req, res) => {
+    const { token } = req.cookies;
+
+    if (token) {
+        try {
+            // Decode user data from the JWT token
+            const userData = jwt.verify(token, secret);
+            const userId = userData.id;
+
+            // Find all bookmarks for the user
+            const bookmarks = await NearbyPlace.find({ user: userId });
+
+            if (!bookmarks || bookmarks.length === 0) {
+                return res.status(404).json({ message: 'No bookmarks found' });
+            }
+
+            res.status(200).json(bookmarks);
+        } catch (err) {
+            console.error('Error while fetching bookmarks:', err);
+            res.status(500).json({ message: 'Failed to fetch bookmarks' });
+        }
+    } else {
+        res.status(401).json({ message: 'Unauthorized' });
+    }
+});
+
+app.delete('/api/bookmarks/:place_id', async (req, res) => {
+    const { token } = req.cookies;
+    const { place_id } = req.params;
+    console.log(req.params);
+    if (token) {
+        try {
+            // Decode user data from the JWT token
+            const userData = jwt.verify(token, secret);
+            const userId = userData.id;
+
+            // Find and delete the bookmark
+            const deletedBookmark = await NearbyPlace.findOneAndDelete({ place_id, user: userId });
+            if (!deletedBookmark) {
+                return res.status(404).json({ message: 'Bookmark not found' });
+            }
+
+            res.status(200).json({ message: 'Bookmark removed successfully' });
+        } catch (err) {
+            console.error('Error while removing bookmark:', err);
+            res.status(500).json({ message: 'Failed to remove bookmark' });
+        }
+    } else {
+        res.status(401).json({ message: 'Unauthorized' });
+    }
+});
+
 
 app.listen(4000, () => {
     console.log('Server running on http://localhost:4000');
