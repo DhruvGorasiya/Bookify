@@ -51,7 +51,7 @@ export default function AccountPage() {
   ];
 
   if (!loading) {
-    return "Loading...";
+    return <div>"Loading..."</div>;
   }
 
   if (loading && !user) return <Navigate to="/login" />;

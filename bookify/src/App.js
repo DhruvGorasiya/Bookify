@@ -5,7 +5,8 @@ import LoginPage from './pages/LoginPage';
 import Layout from './Layout';
 import AccountLayout from './LayoutAccount';
 import RegisterPage from './pages/RegisterPage';
-import MyBookings from './pages/MyBookingsPage';
+import BookingsPage from './pages/BookingsPage';
+import BookingPage from './pages/BookingPage';
 import PlacePage from './pages/PlacePage';
 import PlacesPage from './pages/PlacesPage';
 import PlacesFormPage from './pages/PlacesFormPage';
@@ -33,7 +34,8 @@ function App() {
           </Route>
           <Route path='/account' element={<AccountLayout />}>
             <Route path='/account/profile' element={<ProfilePage />} />
-            <Route path='/account/bookings' element={<MyBookings />} />
+            <Route path='/account/bookings' element={<BookingsPage />} />
+            <Route path='/account/bookings/:id' element={<BookingPage />} />
             <Route path='/account/accommodations' element={<PlacesPage />} />
             <Route path='/account/:places/:id' element={<PlacesFormPage />} />
             <Route path='/account/updateProfile' element={<UpdateProfilePage />} />

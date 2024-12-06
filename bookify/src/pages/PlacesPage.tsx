@@ -20,6 +20,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
+import PlaceImg from "../PlaceImg";
 export const REMOTE_SERVER = process.env.API_BASE_PATH
 export default function PlacesPage() {
     const [places, setPlaces] = useState<{ _id:string, title: string, description: string, photos: string[] }[]>([]);
@@ -43,9 +44,7 @@ export default function PlacesPage() {
                 {places.length > 0 && places.map(place => (
                     <Link to={'/account/places/'+place._id} className="mt-4 flex cursor-pointer gap-4 bg-gray-100 p-2 rounded-2xl">
                         <div className="w-32 h-32 bg-gray-300 shrink-0">
-                            {place.photos.length > 0 && (
-                                <img src={'http://localhost:4000/uploads/' + place.photos[0]} alt={place.title} className="w-full h-full object-cover"/>
-                            )}
+                            <PlaceImg place={place} />
                         </div>
                         <div className="grow-0 shrink">
                             <h2 className="text-xl">{place.title}</h2>

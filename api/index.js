@@ -1,10 +1,13 @@
 const express = require('express');
+const axios = require('axios');
 const cors = require('cors');
 const app = express();
 const mongoose = require('mongoose');
 const PlaceModel = require('./models/Place');
+const Booking = require('./models/Booking');
 require('dotenv').config();
 const UserModel = require('./models/User');
+const NearbyPlace = require('./models/NearbyPlace');
 app.use(express.json());
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -13,8 +16,17 @@ const imageDownloader = require('image-downloader');
 const multer = require('multer');
 const fs = require('fs');
 
-mongoose.connect(process.env.MONGO_URL);
+mongoose.connect(process.env.MONGO_URL);    
 const secret = 'asdfasdgasdfgasdfhgaisdh';
+
+function getUserDataFromReq(req) {
+    return new Promise((resolve, reject) => {
+        jwt.verify(req.cookies.token, secret, {}, async (err, userData) => {
+            if (err) throw err;
+            resolve(userData);
+        });
+    });
+}
 
 app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
@@ -210,7 +222,165 @@ app.put('/places', async (req, res) => {
 
 app.get('/places', async (req, res) => {
     res.json(await PlaceModel.find());
-})
+});
+
+app.get('/search-places', async (req, res) => {
+    try {
+        const { search } = req.query;
+        let query = {};
+        
+        if (search) {
+            query = {
+                $or: [
+                    { title: { $regex: search, $options: 'i' } },
+                    { address: { $regex: search, $options: 'i' } },
+                    { description: { $regex: search, $options: 'i' } }
+                ]
+            };
+        }
+        
+        const places = await PlaceModel.find(query);
+        res.json(places);
+    } catch (error) {
+        console.error('Error searching places:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.post('/bookings', async (req,res) => {
+    const userData = await getUserDataFromReq(req);
+    const {
+        place, checkIn, checkOut, numberOfGuests, name, phone, price,
+    } = req.body;
+    Booking.create({
+        place, checkIn, checkOut, numberOfGuests, name, phone, price,
+        user:userData.id,
+    }).then((doc) => {
+        res.json(doc);
+    }).catch ((err) => {
+        throw err;
+    })
+});
+
+
+
+app.get('/bookings', async (req, res) => {
+    const userData = await getUserDataFromReq(req);
+    res.json( await Booking.find({user:userData.id}).populate('place') );
+});
+
+app.get('/api/geocode', async (req, res) => {
+    try {
+        const response = await axios.get(
+            `https://maps.googleapis.com/maps/api/geocode/json`,
+            { params: req.query }
+        );
+        res.json(response.data);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error.message);
+    }
+});
+
+app.get('/api/nearbySearch', async (req, res) => {
+    try {
+        const response = await axios.get(
+            `https://maps.googleapis.com/maps/api/place/nearbysearch/json`,
+            { params: req.query }
+        );
+        res.json(response.data);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error.message);
+    }
+});
+
+app.post('/api/bookmarks', async (req, res) => {
+    const { token } = req.cookies;
+    const { placeId, name, vicinity } = req.body;
+    if (token) {
+        try {
+            // Decode user data from the JWT token
+            const userData = jwt.verify(token, secret);
+            const userId = userData.id;
+
+            // Check if the place is already bookmarked
+            const existingBookmark = await NearbyPlace.findOne({ place_id: placeId, user: userId });
+            if (existingBookmark) {
+                return res.status(400).json({ message: 'Place already bookmarked' });
+            }
+
+            // Create and save the new bookmark
+            const newBookmark = await NearbyPlace.create({
+                place_id: placeId,
+                name,
+                vicinity,
+                user: userId,
+            });
+
+            res.status(200).json(newBookmark);
+        } catch (err) {
+            console.error('Error while adding bookmark:', err);
+            res.status(500).json({ message: 'Failed to add bookmark' });
+        }
+    } else {
+        res.status(401).json({ message: 'Unauthorized' });
+    }
+});
+
+// Route to get all bookmarks for the logged-in user
+app.get('/api/bookmarks', async (req, res) => {
+    const { token } = req.cookies;
+
+    if (token) {
+        try {
+            // Decode user data from the JWT token
+            const userData = jwt.verify(token, secret);
+            const userId = userData.id;
+
+            // Find all bookmarks for the user
+            const bookmarks = await NearbyPlace.find({ user: userId });
+
+            if (!bookmarks || bookmarks.length === 0) {
+                return res.status(404).json({ message: 'No bookmarks found' });
+            }
+
+            res.status(200).json(bookmarks);
+        } catch (err) {
+            console.error('Error while fetching bookmarks:', err);
+            res.status(500).json({ message: 'Failed to fetch bookmarks' });
+        }
+    } else {
+        res.status(401).json({ message: 'Unauthorized' });
+    }
+});
+
+app.delete('/api/bookmarks/:place_id', async (req, res) => {
+    const { token } = req.cookies;
+    const { place_id } = req.params;
+    console.log(req.params);
+    if (token) {
+        try {
+            // Decode user data from the JWT token
+            const userData = jwt.verify(token, secret);
+            const userId = userData.id;
+
+            // Find and delete the bookmark
+            const deletedBookmark = await NearbyPlace.findOneAndDelete({ place_id, user: userId });
+            if (!deletedBookmark) {
+                return res.status(404).json({ message: 'Bookmark not found' });
+            }
+
+            res.status(200).json({ message: 'Bookmark removed successfully' });
+        } catch (err) {
+            console.error('Error while removing bookmark:', err);
+            res.status(500).json({ message: 'Failed to remove bookmark' });
+        }
+    } else {
+        res.status(401).json({ message: 'Unauthorized' });
+    }
+});
+
 
 app.listen(4000, () => {
     console.log('Server running on http://localhost:4000');
