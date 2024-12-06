@@ -24,7 +24,7 @@ import axios from "axios";
 const userNavigation = [
   { name: "Your Profile", href: "/account/profile" },
   { name: "Settings", href: "/settings" },
-  { name: "Sign out", href: "/" },
+  { name: "Sign out", href: "#" },
 ];
 
 function classNames(...classes: string[]): string {
@@ -56,9 +56,10 @@ export default function AccountPage() {
 
   if (loading && !user) return <Navigate to="/login" />;
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await axios.post("http://localhost:4000/logout");
     setUser(null);
-    navigate("/login");
+    navigate("/");
   };
   return (
     <>
@@ -146,12 +147,23 @@ export default function AccountPage() {
                     >
                       {userNavigation.map((item) => (
                         <MenuItem key={item.name}>
-                          <a
-                            href={item.href}
-                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
-                          >
-                            {item.name}
-                          </a>
+                          {item.name === "Sign out" ? (
+                            <DisclosureButton
+                              key={item.name}
+                              as="button"
+                              onClick={item.name === "Sign out" ? handleLogout : () => window.location.href = item.href}
+                              className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white w-full text-left"
+                            >
+                              {item.name}
+                            </DisclosureButton>
+                          ) : (
+                            <a
+                              href={item.href}
+                              className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
+                            >
+                              {item.name}
+                            </a>
+                          )}
                         </MenuItem>
                       ))}
                     </MenuItems>
@@ -225,9 +237,9 @@ export default function AccountPage() {
                 {userNavigation.map((item) => (
                   <DisclosureButton
                     key={item.name}
-                    as="a"
-                    href={item.href}
-                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                    as="button"
+                    onClick={item.name === "Sign out" ? handleLogout : () => window.location.href = item.href}
+                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white w-full text-left"
                   >
                     {item.name}
                   </DisclosureButton>
