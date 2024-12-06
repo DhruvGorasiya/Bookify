@@ -16,7 +16,7 @@ export default function Header() {
     };
 
     return (
-        <header className="fixed top-0 left-0 right-0 p-5 flex justify-between items-center bg-white shadow-md max-w-full mx-auto rounded-full">
+        <header className="fixed top-0 left-0 right-0 z-10 p-5 flex justify-between items-center bg-white shadow-md max-w-full mx-auto rounded-full">
             <Link to={"/"} className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-gradient-to-r from-red-400 to-yellow-400 rounded-full flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-white">
