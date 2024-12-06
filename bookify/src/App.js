@@ -18,7 +18,7 @@ import UpdateProfilePage from './pages/UpdateProfilePage';
 import axios from 'axios';
 
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = 'http://localhost:4000';
+axios.defaults.baseURL = process.env.REACT_APP_API_BASE_PATH;
 
 function App() {
 
