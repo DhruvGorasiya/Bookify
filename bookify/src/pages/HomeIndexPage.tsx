@@ -64,7 +64,7 @@ export default function HomeIndexPage() {
               <div className="bg-gray-500 mb-2 rounded-2xl flex">
                 {place.photos?.[0] && (
                   <img
-                    className="rounded-2xl object-cover aspect-square"
+                    className="rounded-2xl object-cover aspect-square w-full"
                     src={`${baseAPIPath}/uploads/` + place.photos?.[0]}
                     alt=""
                   />

@@ -63,6 +63,7 @@ const PlaceSearch = ({ location }) => {
         home_goods_store: 'home_goods_store',
     };
 
+
     const handleSearch = async (e) => {
         e.preventDefault();
         if (!searchTerm) return;
