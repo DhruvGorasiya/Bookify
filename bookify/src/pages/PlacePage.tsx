@@ -7,6 +7,7 @@ import AddressLink from "../AddressLink";
 import { UserContext } from "../UserContext";
 import ProfilePage from "./ProfilePage";
 import { Link } from "react-router-dom";
+import PlaceSearch from './PlaceSearch';
 
 interface Place {
   extraInfo: ReactNode;
@@ -27,6 +28,10 @@ interface User {
   _id: string;
   role: string;
 }
+interface Location{
+  lat: string;
+  lng: string;
+}
 
 export default function PlacePage() {
   const baseAPIPath =
@@ -45,6 +50,13 @@ export default function PlacePage() {
     new Set()
   );
   const [showOnlyHighlighted, setShowOnlyHighlighted] = useState(false);
+  const [searchPlaces, setSearchPlaces] = useState([]);
+  const [location, setLocation] = useState<Location | null>(null);
+
+  const handlePlaceSearch = (results: any) => {
+    setSearchPlaces(results);
+  }
+
 
   // Fetch place details
   useEffect(() => {
@@ -68,14 +80,15 @@ export default function PlacePage() {
           },
         });
 
-        const location = geocodeResponse.data.results[0]?.geometry?.location;
+        setLocation(geocodeResponse.data.results[0]?.geometry?.location);
+        const tempLocation = geocodeResponse.data.results[0]?.geometry?.location;
 
-        if (location) {
+        if (tempLocation) {
           const placesResponse = await axios.get(
             `${baseAPIPath}/api/nearbySearch`,
             {
               params: {
-                location: `${location.lat},${location.lng}`,
+                location: `${tempLocation.lat},${tempLocation .lng}`,
                 radius: 1500,
                 type: "restaurant",
                 key: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
@@ -180,8 +193,8 @@ export default function PlacePage() {
 
   const filteredPlaces = showOnlyHighlighted
     ? nearbyPlaces.filter((nearbyPlace) =>
-        highlightedPlaces.has(nearbyPlace.place_id)
-      )
+      highlightedPlaces.has(nearbyPlace.place_id)
+    )
     : nearbyPlaces;
 
   return (
@@ -228,14 +241,15 @@ export default function PlacePage() {
           {place.extraInfo}
         </div>
       </div>
-
+      {place && (
+        <PlaceSearch location={location} />
+      )}
       <div className="mt-8">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-2xl">Nearby Places</h2>
           <button
-            className={`px-4 py-2 rounded text-white ${
-              showOnlyHighlighted ? "bg-blue-600" : "bg-gray-600"
-            }`}
+            className={`px-4 py-2 rounded text-white ${showOnlyHighlighted ? "bg-blue-600" : "bg-gray-600"
+              }`}
             onClick={() => setShowOnlyHighlighted(!showOnlyHighlighted)}
           >
             {showOnlyHighlighted ? "Show All Places" : "Show Highlighted Only"}
@@ -245,11 +259,10 @@ export default function PlacePage() {
           {filteredPlaces.map((nearbyPlace) => (
             <li
               key={nearbyPlace.place_id}
-              className={`mb-2 p-3 rounded cursor-pointer ${
-                highlightedPlaces.has(nearbyPlace.place_id)
+              className={`mb-2 p-3 rounded cursor-pointer ${highlightedPlaces.has(nearbyPlace.place_id)
                   ? "bg-yellow-100 border-2 border-yellow-500"
                   : "bg-white"
-              }`}
+                }`}
               onClick={() => toggleHighlightAndBookmark(nearbyPlace.place_id)}
             >
               <strong>{nearbyPlace.name}</strong> - {nearbyPlace.vicinity}

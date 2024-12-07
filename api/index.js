@@ -326,6 +326,36 @@ app.get('/api/nearbySearch', async (req, res) => {
     }
 });
 
+app.get('/api/places/search', async (req, res) => {
+
+    try {
+        const { query, radius } = req.query;  // Only query and key are needed for textsearch
+        console.log(query + " " + radius);
+        if (!query || !radius) {
+            return res.status(400).json({ error: 'Missing required parameters: query, radius' });
+        }
+
+        const response = await axios.get(
+            `https://maps.googleapis.com/maps/api/place/textsearch/json?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`,
+            {
+                params: {
+                    query,
+                    radius,
+                },
+            }
+        );
+
+        if (response.data.status !== 'OK') {
+            return res.status(500).json({ error: `Google Places API Error: ${response.data.status}`, details: response.data });
+        }
+
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching places:', error);
+        res.status(500).json({ error: 'Failed to fetch places' });
+    }
+});
+
 app.post('/api/bookmarks', async (req, res) => {
     console.log("req.body", req.body);
     const { token } = req.cookies;
