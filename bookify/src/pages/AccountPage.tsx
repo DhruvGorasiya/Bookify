@@ -23,7 +23,6 @@ import axios from "axios";
 
 const userNavigation = [
   { name: "Your Profile", href: "/account/profile" },
-  { name: "Settings", href: "/settings" },
   { name: "Sign out", href: "#" },
 ];
 
