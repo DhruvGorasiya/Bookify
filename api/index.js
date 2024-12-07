@@ -289,8 +289,6 @@ app.post('/bookings', async (req, res) => {
     })
 });
 
-
-
 app.get('/bookings', async (req, res) => {
     const userData = await getUserDataFromReq(req);
     res.json(await Booking.find({ user: userData.id }).populate('place'));
@@ -422,6 +420,22 @@ app.delete('/api/bookmarks/:place_id', async (req, res) => {
     } else {
         res.status(401).json({ message: 'Unauthorized' });
     }
+});
+
+app.get('/api/users/:placeId', async (req, res) => {
+    const { placeId } = req.params;
+    const place = await PlaceModel.findById(placeId);
+    const user = await UserModel.findOne({ _id: place.owner });
+    res.json(user);
+});
+
+app.get('/api/users/places/:uid', async (req, res) => {
+    console.log("req.params", req.params);
+    const { uid } = req.params;
+    // console.log("uid", uid);
+    const places = await PlaceModel.find({ owner: uid });
+    console.log("places", places);
+    res.json(places);
 });
 
 

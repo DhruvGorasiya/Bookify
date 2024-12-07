@@ -5,6 +5,8 @@ import BookingWidget from "../BookingWidget";
 import PlaceGallery from "../PlaceGallery";
 import AddressLink from "../AddressLink";
 import { UserContext } from "../UserContext";
+import ProfilePage from "./ProfilePage";
+import { Link } from "react-router-dom";
 
 interface Place {
   extraInfo: ReactNode;
@@ -19,6 +21,13 @@ interface Place {
   owner: string;
 }
 
+interface User {
+  name: string;
+  email: string;
+  _id: string;
+  role: string;
+}
+
 export default function PlacePage() {
   const baseAPIPath =
     process.env.REACT_APP_API_BASE_PATH || "http://localhost:4000";
@@ -28,6 +37,7 @@ export default function PlacePage() {
 
   const [place, setPlace] = useState<Place | null>(null);
   const [nearbyPlaces, setNearbyPlaces] = useState<any[]>([]);
+  const [host, setHost] = useState<User | null>(null);
   const [highlightedPlaces, setHighlightedPlaces] = useState<Set<string>>(
     new Set()
   );
@@ -79,9 +89,11 @@ export default function PlacePage() {
         console.error("Error fetching nearby places:", error);
       }
     };
-
     fetchNearbyPlaces();
-  }, [place?.address]);
+    if (id) {
+      fetchUserByPlaceId(id);
+    }
+  }, [place?.address, id]);
 
   // Fetch initial bookmarks from API and update highlighted places
   useEffect(() => {
@@ -104,6 +116,12 @@ export default function PlacePage() {
 
     fetchBookmarkedPlaces();
   }, []);
+
+  const fetchUserByPlaceId = async (placeId: string) => {
+    const response = await axios.get(`${baseAPIPath}/api/users/${placeId}`);
+    setHost(response.data);
+    // return response.data;
+  };
 
   const toggleHighlightAndBookmark = async (placeId: string) => {
     const newHighlightedPlaces = new Set(highlightedPlaces);
@@ -168,9 +186,25 @@ export default function PlacePage() {
 
   return (
     <div className="mt-4 bg-gray-100 -mx-8 px-8 pt-8">
-      <h1 className="text-3xl">{place.title}</h1>
+      {host && (host._id !== user?._id) && (
+        <div className="mb-6">
+          <div className="flex items-center gap-2 text-xl text-gray-700">
+            <h2>Hosted by <span className="font-semibold">{host.name}</span></h2>
+          </div>
+          <div className="mt-2">
+            <Link 
+              to={`/host-accommodations/${id}`}
+              className="inline-flex items-center text-primary hover:text-primary-dark underline transition duration-200"
+            >
+              View all accommodations by this host →
+            </Link>
+          </div>
+        </div>
+      )}
+      <h1 className="text-3xl font-bold mb-4">{place.title}</h1>
       <AddressLink>{place.address}</AddressLink>
       <PlaceGallery place={place} />
+
 
       <div className="mt-8 mb-8 grid gap-8 grid-cols-[2fr_1fr]">
         <div>

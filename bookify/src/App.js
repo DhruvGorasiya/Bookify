@@ -16,6 +16,7 @@ import { Toaster } from 'react-hot-toast';
 import { UserContextProvider } from './UserContext';
 import UpdateProfilePage from './pages/UpdateProfilePage';
 import axios from 'axios';
+import HostAccommodations from './pages/HostAccommodations';
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = process.env.REACT_APP_API_BASE_PATH || "http://localhost:4000";
@@ -31,6 +32,7 @@ function App() {
             <Route path='/login' element={<LoginPage />} />
             <Route path='/register' element={<RegisterPage />} />
             <Route path='/place/:id' element={<PlacePage />} />
+            <Route path='/host-accommodations/:id' element={<HostAccommodations />} />
           </Route>
           <Route path='/account' element={<AccountLayout />}>
             <Route path='/account/profile' element={<ProfilePage />} />

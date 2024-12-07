@@ -16,6 +16,13 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import PlacesPage from "./PlacesPage";
 
+interface User {
+  name: string;
+  email: string;
+  _id: string;
+  role: string;
+}
+
 export default function ProfilePage() {
   interface Place {
     extraInfo: ReactNode;
